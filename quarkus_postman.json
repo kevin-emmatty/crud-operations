@@ -1,0 +1,204 @@
+{
+	"info": {
+		"_postman_id": "3c1b51fd-713b-4c95-b8cc-25dfabe50838",
+		"name": "APIBanking",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38979933",
+		"_collection_link": "https://speeding-equinox-707697.postman.co/workspace/Quarkus~0de7b38f-545d-400d-b9b1-f7cfb4d8dce4/collection/38979933-3c1b51fd-713b-4c95-b8cc-25dfabe50838?action=share&source=collection_link&creator=38979933"
+	},
+	"item": [
+		{
+			"name": "Get Products",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/products",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Products Count",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/products",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Sorted Porducts",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/products",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "insert products",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    {\r\n        \"id\": 21,\r\n        \"title\": \"A\",\r\n        \"price\": 9.9,\r\n        \"description\": \"\",\r\n        \"category\": \"\",\r\n        \"image\": \"\",\r\n        \"rating\": {\r\n            \"rate\": 0,\r\n            \"count\": 0\r\n        }\r\n    },\r\n    {\r\n        \"id\": 22,\r\n        \"title\": \"B\",\r\n        \"price\": 3.5,\r\n        \"description\": \"\",\r\n        \"category\": \"\",\r\n        \"image\": \"\",\r\n        \"rating\": {\r\n            \"rate\": 0,\r\n            \"count\": 0\r\n        }\r\n    },\r\n    {\r\n        \"id\": 1,\r\n        \"title\": \"B\"\r\n    }\r\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/products",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update products",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    {\r\n        \"id\": 21,\r\n        \"title\": \"A\",\r\n        \"price\": 9.9,\r\n        \"description\": \"\",\r\n        \"category\": \"\",\r\n        \"image\": \"\",\r\n        \"rating\": {\r\n            \"rate\": 0,\r\n            \"count\": 0\r\n        }\r\n    },\r\n    {\r\n        \"id\": 22,\r\n        \"title\": \"B\",\r\n        \"price\": 3.5,\r\n        \"description\": \"\",\r\n        \"category\": \"\",\r\n        \"image\": \"\",\r\n        \"rating\": {\r\n            \"rate\": 0,\r\n            \"count\": 0\r\n        }\r\n    },\r\n    {\r\n        \"id\": 1,\r\n        \"title\": \"B\"\r\n    }\r\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/products",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete products",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/products/:id",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"products",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "23"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
