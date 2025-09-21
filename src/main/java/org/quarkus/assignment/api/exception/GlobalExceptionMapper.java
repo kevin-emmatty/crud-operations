@@ -36,9 +36,12 @@ public class GlobalExceptionMapper implements ExceptionMapper<Throwable> {
 	public Response toResponse(Throwable exception) {
 		int status = mapStatus(exception);
 		LOG.error("Unhandled exception", exception);
+		String reason = Response.Status.fromStatusCode(status) != null
+				? Response.Status.fromStatusCode(status).getReasonPhrase()
+				: "Unknown";
 		ErrorResponse body = ErrorResponse.builder()
 				.status(status)
-				.error(Response.Status.fromStatusCode(status).getReasonPhrase())
+				.error(reason)
 				.message(exception.getMessage())
 				.path(uriInfo != null ? uriInfo.getPath() : "")
 				.timestamp(OffsetDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))

@@ -92,3 +92,9 @@ Mappers: `mapper.ProductMapper` (domain → DTO).
 - `util/` CSV I/O, URI constants
 - `api/dto/`, `dto/` response DTOs
 - `mapper/` domain→DTO mapping
+
+## Coverage
+- Generate report: `mvnw.cmd test` (Windows) or `./mvnw test`
+- HTML report: `target/site/jacoco/index.html`
+- Exec file: `target/jacoco.exec`
+- Enforce thresholds (optional): run `mvnw.cmd verify` to fail build if coverage rules are added later
