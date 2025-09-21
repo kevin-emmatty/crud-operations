@@ -109,7 +109,7 @@ public class ProductService {
 	 */
 	public void deleteByIdOrThrow(int id) {
 		boolean deleted = ProductCsvUtil.deleteById(csvPath, id);
-		if (!deleted) throw new NotFoundException();
+		if (!deleted) throw new NotFoundException("Requested id not found for deletion");
 	}
 
 	/**
