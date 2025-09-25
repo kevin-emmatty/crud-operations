@@ -1,10 +1,10 @@
-# Product CRUD (Quarkus RESTEasy Reactive + CSV store)
+# Product CRUD (Quarkus Reactive + MongoDB)
 
 ## Overview
-A small Product Management API built with Quarkus RESTEasy Reactive. It exposes CRUD and utility endpoints and persists data to a CSV file.
+A small Product Management API built with Quarkus (reactive). It exposes CRUD and utility endpoints and persists data to MongoDB.
 
 - Entity: Product { id, name, description, price, quantity }
-- Storage: CSV file at `app.csv.path`
+- Storage: MongoDB (`productsdb.products`)
 - JSON: Jackson (quarkus-rest-jackson)
 - Error handling: Global JAX-RS ExceptionMapper with structured ErrorResponse
 - Tests: QuarkusTest + REST-assured
@@ -12,17 +12,18 @@ A small Product Management API built with Quarkus RESTEasy Reactive. It exposes 
 ## Stack
 - Quarkus 3.x (RESTEasy Reactive)
 - Lombok (DTOs/utility)
-- OpenCSV (CSV I/O)
+- MongoDB Panache (reactive)
 
 ## Run
 - Dev: `mvnw.cmd quarkus:dev` (Windows) or `./mvnw quarkus:dev`
 - Build: `mvnw.cmd clean install`
 
-If Windows blocks `target` cleanup, ensure no dev process holds the dev jar (stop quarkus:dev) and delete `target`.
+Ensure MongoDB is running locally on `localhost:27017`.
 
 ## Configuration
 - Main: `src/main/resources/application.properties`
-  - `app.csv.path=data/products.csv`
+  - `quarkus.mongodb.connection-string=mongodb://localhost:27017`
+  - `quarkus.mongodb.database=productsdb`
 - Test: `src/test/resources/application.properties`
   - `app.csv.path=target/test-products.csv`
 
@@ -56,6 +57,9 @@ Base path: `/products`
 - GET `/products/sorted/price?order=ASC|DESC`
   - Returns products sorted by price (ascending by default)
 
+Third-party (reactive):
+- GET `/thirdparty/users` → proxies `https://jsonplaceholder.typicode.com/users`
+
 ## DTOs
 - `api.dto.ProductResponse`
 - `api.dto.CreateProductsResponse`
@@ -84,7 +88,7 @@ Mappers: `mapper.ProductMapper` (domain → DTO).
 - Run: `mvnw.cmd test`
 
 ## Notes on Reactive
-- This project uses RESTEasy Reactive APIs. CSV I/O is blocking; for fully reactive persistence, prefer a reactive database client (e.g., PostgreSQL reactive). If you keep CSV and anticipate load, mark blocking methods or offload to workers.
+- Endpoints return Mutiny `Uni<...>` and MongoDB access is non-blocking via Reactive Panache.
 
 ## Project Structure
 - `api/` controllers
@@ -94,7 +98,7 @@ Mappers: `mapper.ProductMapper` (domain → DTO).
 - `mapper/` domain→DTO mapping
 
 ## Coverage
-- Generate report: `mvnw.cmd test` (Windows) or `./mvnw test`
+- Run tests: `mvnw.cmd test` (Windows) or `./mvnw test`
 - HTML report: `target/site/jacoco/index.html`
 - Exec file: `target/jacoco.exec`
-- Enforce thresholds (optional): run `mvnw.cmd verify` to fail build if coverage rules are added later
+- Target coverage: ≥ 75% overall
