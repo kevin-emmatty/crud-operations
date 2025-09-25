@@ -1,146 +1,109 @@
 package org.quarkus.assignment.service;
 
+import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
 import org.jboss.logging.Logger;
 import org.quarkus.assignment.dto.SummaryDto;
 import org.quarkus.assignment.model.Product;
 import org.quarkus.assignment.model.SortOrder;
-import org.quarkus.assignment.util.ProductCsvUtil;
+import org.quarkus.assignment.persistence.ProductRepository;
 
-import java.util.Comparator;
-import java.util.HashSet;
+import io.quarkus.panache.common.Sort;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class ProductService {
 
-	private static final Logger LOG = Logger.getLogger(ProductService.class);
+    private static final Logger LOG = Logger.getLogger(ProductService.class);
 
-	@ConfigProperty(name = "app.csv.path", defaultValue = "data/products.csv")
-	String csvPath;
+    @Inject
+    ProductRepository repository;
 
-	/**
-	 * Returns all products from the CSV store.
-	 * @return list of products
-	 */
-	public List<Product> getAllProducts() {
-		return ProductCsvUtil.readAllProducts(csvPath);
-	}
+    public Uni<List<Product>> getAllProducts() {
+        return repository.listAll();
+    }
 
-	/**
-	 * Finds a product by id if present.
-	 * @param id product id
-	 * @return optional product
-	 */
-	public Optional<Product> getProductById(int id) {
-		return getAllProducts().stream().filter(p -> p.getId() != null && p.getId() == id).findFirst();
-	}
+    public Uni<Product> getProductById(long id) {
+        return repository.findById(id);
+    }
 
-	/**
-	 * Returns product by id or throws 404.
-	 * @param id product id
-	 * @return found product
-	 */
-	public Product getRequiredProductById(int id) {
-		return getProductById(id).orElseThrow(NotFoundException::new);
-	}
+    public Uni<Product> getRequiredProductById(long id) {
+        return repository.findById(id).onItem().ifNull().failWith(NotFoundException::new);
+    }
 
-	/**
-	 * Creates only new products by id.
-	 * @param products products to create
-	 * @return creation summary
-	 */
-	public SummaryDto createProducts(List<Product> products) {
-		List<Product> existing = ProductCsvUtil.readAllProducts(csvPath);
-		Set<Integer> existingIds = new HashSet<>();
-		for (Product p : existing) existingIds.add(p.getId());
-		int created = 0;
-		int duplicates = 0;
-		for (Product p : products) {
-			if (existingIds.contains(p.getId())) duplicates++; else created++;
-		}
-		List<Product> onlyNew = products.stream().filter(p -> !existingIds.contains(p.getId())).collect(Collectors.toList());
-		ProductCsvUtil.createOnlyProducts(csvPath, onlyNew);
-		return SummaryDto.builder().created(created).duplicates(duplicates).updated(0).total(products.size()).build();
-	}
+    public Uni<SummaryDto> createProducts(List<Product> products) {
+        Set<Long> ids = products.stream().map(Product::getId).collect(Collectors.toSet());
+        return repository.find("_id in ?1", ids).list().onItem().transformToUni(existing -> {
+            Set<Long> existingIds = existing.stream().map(Product::getId).collect(Collectors.toSet());
+            List<Product> onlyNew = products.stream().filter(p -> !existingIds.contains(p.getId())).collect(Collectors.toList());
+            int created = onlyNew.size();
+            int duplicates = products.size() - created;
+            if (onlyNew.isEmpty()) {
+                return Uni.createFrom().item(SummaryDto.builder().created(0).duplicates(duplicates).updated(0).total(products.size()).build());
+            }
+            return repository.persist(onlyNew)
+                .replaceWith(SummaryDto.builder().created(created).duplicates(duplicates).updated(0).total(products.size()).build());
+        });
+    }
 
-	/**
-	 * Overwrites existing and creates missing products.
-	 * @param products products to upsert
-	 * @return update summary
-	 */
-	public SummaryDto updateProducts(List<Product> products) {
-		List<Product> existing = ProductCsvUtil.readAllProducts(csvPath);
-		Set<Integer> existingIds = existing.stream().map(Product::getId).collect(Collectors.toSet());
-		int updated = 0;
-		int created = 0;
-		for (Product p : products) {
-			if (existingIds.contains(p.getId())) updated++; else created++;
-		}
-		ProductCsvUtil.upsertProducts(csvPath, products);
-		return SummaryDto.builder().created(created).updated(updated).duplicates(0).total(products.size()).build();
-	}
+    public Uni<SummaryDto> updateProducts(List<Product> products) {
+        Set<Long> ids = products.stream().map(Product::getId).collect(Collectors.toSet());
+        return repository.find("_id in ?1", ids).list().onItem().transformToUni(existing -> {
+            Set<Long> existingIds = existing.stream().map(Product::getId).collect(Collectors.toSet());
+            int updated = (int) products.stream().filter(p -> existingIds.contains(p.getId())).count();
+            int created = products.size() - updated;
+            return repository.persistOrUpdate(products)
+                .replaceWith(SummaryDto.builder().created(created).updated(updated).duplicates(0).total(products.size()).build());
+        });
+    }
 
-	/**
-	 * Applies partial updates to products by id.
-	 * @param products products with fields to patch
-	 * @return patch summary
-	 */
-	public SummaryDto patchProducts(List<Product> products) {
-		List<Product> existing = ProductCsvUtil.readAllProducts(csvPath);
-		Set<Integer> existingIds = existing.stream().map(Product::getId).collect(Collectors.toSet());
-		int updated = 0;
-		int created = 0;
-		for (Product p : products) {
-			if (existingIds.contains(p.getId())) updated++; else created++;
-		}
-		ProductCsvUtil.patchProducts(csvPath, products);
-		return SummaryDto.builder().created(created).updated(updated).duplicates(0).total(products.size()).build();
-	}
+    public Uni<SummaryDto> patchProducts(List<Product> products) {
+        Set<Long> ids = products.stream().map(Product::getId).collect(Collectors.toSet());
+        return repository.find("_id in ?1", ids).list().onItem().transformToUni(existing -> {
+            // Merge existing fields where present
+            java.util.Map<Long, Product> idToExisting = existing.stream().collect(Collectors.toMap(Product::getId, p -> p));
+            int updated = 0;
+            int created = 0;
+            for (Product patch : products) {
+                Product ex = idToExisting.get(patch.getId());
+                if (ex != null) {
+                    if (patch.getName() != null) ex.setName(patch.getName());
+                    if (patch.getDescription() != null) ex.setDescription(patch.getDescription());
+                    if (patch.getPrice() != null) ex.setPrice(patch.getPrice());
+                    if (patch.getQuantity() != null) ex.setQuantity(patch.getQuantity());
+                    updated++;
+                } else {
+                    idToExisting.put(patch.getId(), patch);
+                    created++;
+                }
+            }
+            List<Product> toPersist = idToExisting.values().stream().collect(Collectors.toList());
+            return repository.persistOrUpdate(toPersist)
+                .replaceWith(SummaryDto.builder().created(created).updated(updated).duplicates(0).total(products.size()).build());
+        });
+    }
 
-	/**
-	 * Deletes a product by id or throws 404.
-	 * @param id product id
-	 */
-	public void deleteByIdOrThrow(int id) {
-		boolean deleted = ProductCsvUtil.deleteById(csvPath, id);
-		if (!deleted) throw new NotFoundException("Requested id not found for deletion");
-	}
+    public Uni<Void> deleteByIdOrThrow(long id) {
+        return repository.deleteById(id).onItem().transformToUni(deleted -> {
+            if (Boolean.TRUE.equals(deleted)) return Uni.createFrom().voidItem();
+            return Uni.createFrom().failure(new NotFoundException("Requested id not found for deletion"));
+        });
+    }
 
-	/**
-	 * Returns true when requested count is available.
-	 * @param id product id
-	 * @param count requested quantity
-	 * @return availability flag
-	 */
-	public boolean isAvailable(int id, int count) {
-		Product p = getRequiredProductById(id);
-		return p.getQuantity() != null && p.getQuantity() >= count;
-	}
+    public Uni<Boolean> isAvailable(long id, int count) {
+        return getRequiredProductById(id).onItem().transform(p -> p.getQuantity() != null && p.getQuantity() >= count);
+    }
 
-	/**
-	 * Returns current available quantity for product.
-	 * @param id product id
-	 * @return available quantity or 0
-	 */
-	public int getAvailableQuantity(int id) {
-		Product p = getRequiredProductById(id);
-		return p.getQuantity() != null ? p.getQuantity() : 0;
-	}
+    public Uni<Integer> getAvailableQuantity(long id) {
+        return getRequiredProductById(id).onItem().transform(p -> p.getQuantity() != null ? p.getQuantity() : 0);
+    }
 
-	/**
-	 * Returns products sorted by price.
-	 * @param order sort order ASC or DESC
-	 * @return sorted list
-	 */
-	public List<Product> getAllSortedByPrice(SortOrder order) {
-		Comparator<Product> cmp = Comparator.comparing(Product::getPrice, Comparator.nullsLast(Double::compareTo));
-		if (order == SortOrder.DESC) cmp = cmp.reversed();
-		return getAllProducts().stream().sorted(cmp).collect(Collectors.toList());
-	}
+    public Uni<List<Product>> getAllSortedByPrice(SortOrder order) {
+        Sort sort = order == SortOrder.DESC ? Sort.by("price").descending() : Sort.by("price").ascending();
+        return repository.findAll(sort).list();
+    }
 }

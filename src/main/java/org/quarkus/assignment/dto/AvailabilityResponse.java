@@ -6,7 +6,7 @@ import lombok.Value;
 @Value
 @Builder
 public class AvailabilityResponse {
-	int id;
+	long id;
 	int requested;
 	boolean available;
 	int availableQuantity;

@@ -6,7 +6,7 @@ import lombok.Value;
 @Value
 @Builder
 public class ProductResponse {
-	Integer id;
+    Long id;
 	String name;
 	String description;
 	Double price;
