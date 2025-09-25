@@ -23,13 +23,48 @@
 					}
 				],
 				"url": {
-					"raw": "localhost:8080/products",
+					"raw": "localhost:8080/products?id=446",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
 						"products"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "446"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remote Service Call",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/thirdparty/users",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"thirdparty",
+						"users"
 					]
 				}
 			},
@@ -51,13 +86,27 @@
 					}
 				],
 				"url": {
-					"raw": "localhost:8080/products",
+					"raw": "localhost:8080/products/:id/availability?count=15",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
-						"products"
+						"products",
+						":id",
+						"availability"
+					],
+					"query": [
+						{
+							"key": "count",
+							"value": "15"
+						}
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "448"
+						}
 					]
 				}
 			},
@@ -79,13 +128,22 @@
 					}
 				],
 				"url": {
-					"raw": "localhost:8080/products",
+					"raw": "localhost:8080/products/sorted/price",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
-						"products"
+						"products",
+						"sorted",
+						"price"
+					],
+					"query": [
+						{
+							"key": "order",
+							"value": "DESC",
+							"disabled": true
+						}
 					]
 				}
 			},
@@ -108,7 +166,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "[\r\n    {\r\n        \"id\": 21,\r\n        \"title\": \"A\",\r\n        \"price\": 9.9,\r\n        \"description\": \"\",\r\n        \"category\": \"\",\r\n        \"image\": \"\",\r\n        \"rating\": {\r\n            \"rate\": 0,\r\n            \"count\": 0\r\n        }\r\n    },\r\n    {\r\n        \"id\": 22,\r\n        \"title\": \"B\",\r\n        \"price\": 3.5,\r\n        \"description\": \"\",\r\n        \"category\": \"\",\r\n        \"image\": \"\",\r\n        \"rating\": {\r\n            \"rate\": 0,\r\n            \"count\": 0\r\n        }\r\n    },\r\n    {\r\n        \"id\": 1,\r\n        \"title\": \"B\"\r\n    }\r\n]",
+					"raw": "[\r\n  {\r\n    \"id\": 446,\r\n    \"name\": \"Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops\",\r\n    \"description\": \"Durable backpack for everyday use\",\r\n    \"price\": 100.0,\r\n    \"quantity\": 1000\r\n  },\r\n  {\r\n    \"id\": 447,\r\n    \"name\": \"Apple iPhone 15 Pro\",\r\n    \"description\": \"Latest iPhone model with A17 chip\",\r\n    \"price\": 1200.0,\r\n    \"quantity\": 500\r\n  },\r\n  {\r\n    \"id\": 448,\r\n    \"name\": \"Sony WH-1000XM5 Headphones\",\r\n    \"description\": \"Noise-cancelling wireless headphones\",\r\n    \"price\": 399.99,\r\n    \"quantity\": 300\r\n  },\r\n  {\r\n    \"id\": 449,\r\n    \"name\": \"Dell XPS 15 Laptop\",\r\n    \"description\": \"High performance laptop with OLED display\",\r\n    \"price\": 2100.0,\r\n    \"quantity\": 120\r\n  },\r\n  {\r\n    \"id\": 450,\r\n    \"name\": \"Logitech MX Master 3 Mouse\",\r\n    \"description\": \"Ergonomic wireless mouse\",\r\n    \"price\": 99.99,\r\n    \"quantity\": 800\r\n  },\r\n  {\r\n    \"id\": 451,\r\n    \"name\": \"Samsung Galaxy S24 Ultra\",\r\n    \"description\": \"Flagship phone with 200MP camera\",\r\n    \"price\": 1300.0,\r\n    \"quantity\": 400\r\n  },\r\n  {\r\n    \"id\": 452,\r\n    \"name\": \"Asus ROG Strix Gaming Laptop\",\r\n    \"description\": \"Gaming laptop with RTX 4080 GPU\",\r\n    \"price\": 2500.0,\r\n    \"quantity\": 90\r\n  },\r\n  {\r\n    \"id\": 453,\r\n    \"name\": \"Amazon Kindle Paperwhite\",\r\n    \"description\": \"Waterproof e-reader with backlight\",\r\n    \"price\": 149.99,\r\n    \"quantity\": 700\r\n  },\r\n  {\r\n    \"id\": 454,\r\n    \"name\": \"Nike Air Zoom Pegasus 40\",\r\n    \"description\": \"Running shoes for men and women\",\r\n    \"price\": 130.0,\r\n    \"quantity\": 2000\r\n  },\r\n  {\r\n    \"id\": 455,\r\n    \"name\": \"GoPro Hero 12 Black\",\r\n    \"description\": \"Action camera with 5.3K video\",\r\n    \"price\": 499.99,\r\n    \"quantity\": 250\r\n  }\r\n]\r\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -134,7 +192,7 @@
 				"disabledSystemHeaders": {}
 			},
 			"request": {
-				"method": "PATCH",
+				"method": "PUT",
 				"header": [
 					{
 						"key": "Accept",
@@ -145,7 +203,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "[\r\n    {\r\n        \"id\": 21,\r\n        \"title\": \"A\",\r\n        \"price\": 9.9,\r\n        \"description\": \"\",\r\n        \"category\": \"\",\r\n        \"image\": \"\",\r\n        \"rating\": {\r\n            \"rate\": 0,\r\n            \"count\": 0\r\n        }\r\n    },\r\n    {\r\n        \"id\": 22,\r\n        \"title\": \"B\",\r\n        \"price\": 3.5,\r\n        \"description\": \"\",\r\n        \"category\": \"\",\r\n        \"image\": \"\",\r\n        \"rating\": {\r\n            \"rate\": 0,\r\n            \"count\": 0\r\n        }\r\n    },\r\n    {\r\n        \"id\": 1,\r\n        \"title\": \"B\"\r\n    }\r\n]",
+					"raw": "{\r\n    \"name\": \"Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops\",\r\n    \"description\": \"1\",\r\n    \"price\": 100,\r\n    \"quantity\": 1000\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -153,13 +211,20 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:8080/products",
+					"raw": "localhost:8080/products/:id",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
-						"products"
+						"products",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "446"
+						}
 					]
 				}
 			},
@@ -193,7 +258,7 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": "23"
+							"value": "445"
 						}
 					]
 				}
